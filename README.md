@@ -9,10 +9,10 @@ This solution, instead, writes to HKCU registry to store the encrypted informati
 - If a malicious user gets access to a file share, they will only have access to the script code, but they will not be able to retrieve the encrypted credentials. Additionally, the encrypted data will also be unavailable and there will be nothing that can be cracked.
 
 # Installing the secret
-1. Download the installer script to a secure location (The installer script will contain your plain text values, so it's important that you keep access to this script restricted and not accessible over the network)
-2. Edit the installer script to include your credentials
+1. Download the WriteCreds script to a secure location (The script will contain your plain text values, so it's important that you keep access to this script restricted and not accessible over the network)
+2. Edit the WriteCreds script to include your credentials
 3. Run the script under the user principal(s) that will need to access the credential
-4. Securely delete the installer script or encrypt and store it in a secure location with a password so the plain text can't be easily seen. The installer script file does not need to exist on the server so just delete it or migrate it off the server.
+4. Securely delete the WriteCreds script or encrypt and store it in a secure location with a password so the plain text can't be easily seen. The WriteCreds script file does not need to exist on the server so just delete it or migrate it off the server.
 
 # Using the secrets
 1. Download the ReadCreds script and place it in a secure location on the server where the scripts that will be using the creds reside. 
@@ -23,7 +23,7 @@ This solution, instead, writes to HKCU registry to store the encrypted informati
 3. Simply call the "ReadCreds" script with the "action" to read the encrypted value from the registry and decrypt it
 
 # Example 1 - Retrieving secret in a Batch Script
-- Credentials have been installed into jsmith's user account using the installer script.
+- Credentials have been installed into jsmith's user account using the WriteCreds script.
 - Jsmith is writing a batch script where he needs to use a password (or client secret key) to access the Azure Graph Api.
 
 In this scenario, Jsmith can retrieve this password using the following code:
@@ -33,7 +33,7 @@ In this scenario, Jsmith can retrieve this password using the following code:
 This will put the client secret inside of the %AzureClientSecret% variable and it can be used in the script
 
 # Example 2 - Retrieving secret in a Powershell script
-- An encrypted database connection string has been installed into jsmith's user account using the installer script.
+- An encrypted database connection string has been installed into jsmith's user account using the WriteCreds script.
 - Jsmith is creating a powershell script that needs to obtain a database connection string
 
 Jsmith can retrieve the connection string by calling the ReadCreds script directly in his powershell code:
@@ -61,22 +61,22 @@ In lieu of signed scripts, a scheduled task could be set up to check for any fil
 
 If you have not mitigated psexec using the TokenFilterPolicy configuration (see https://learn.microsoft.com/en-us/troubleshoot/windows-server/windows-security/user-account-control-and-remote-restriction), psexec could be utilized to read the contents of the registry and/or decrypt the contents if they are able to login with the correct user account.
 
-#Installer Scripts
+#WriteCreds Script
 -------------
-The installer scripts contain the plain text credentials that will be encrypted and then written to the HKCU of the user running the script.
+The WriteCreds script contains the plain text credentials that will be encrypted and then written to the HKCU of the user running the script.
 
-For security purposes, these scripts should be migrated off the server and stored in a secure location after use. IE: Use 7-zip to zip them up with AES encryption and a password and move the encrypted archive to your secure store at another location.
+For security purposes, this script should be migrated off the server and stored in a secure location after use. IE: Use 7-zip to zip with AES encryption and a password and move the encrypted archive to your secure store at another location.
 
 
-#Read Scripts
+#ReadCreds Script
 ------------
-These scripts read an encrypted value from the registry and decrypt it. They can be called by other scripts/tools to pull in the desired credentials.
+This script reads an encrypted value from the registry and decrypts it. It can be called by other scripts/tools to pull in the desired credentials.
 
 #Notes
 -------------
 The secrets must be installed by each user who will be referencing them. This is because the encryption is based on the user's login and the secrets can only be decrypted by the user who wrote them. The script uses DPAPI to accomplish this task.
 
-For example, if jsmith and jjones need to access a credential, you will need to run the "installer" script for each user account.
-When you run the installer script, it writes to the user who is running the script's registry an encrypted value. This encrypted value is only accessible to that user.
+For example, if jsmith and jjones need to access a credential, you will need to run the "WriteCreds" script for each user account.
+When you run the WriteCreds script, it writes to the user who is running the script's registry an encrypted value. This encrypted value is only accessible to that user.
 Additionally, the encrypted value will be different for each user and each user can only decrypt the data in their own registry.
 IE: jsmith will not be able to decrypt jjones' encrypted value even if he were able to see it.
