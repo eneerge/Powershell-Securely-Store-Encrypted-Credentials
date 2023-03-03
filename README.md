@@ -12,15 +12,15 @@ This solution, instead, writes to HKCU registry to store the encrypted informati
 1. Download the WriteCreds script to a secure location (The script will contain your plain text values, so it's important that you keep access to this script restricted and not accessible over the network)
 2. Edit the WriteCreds script to include your credentials
 3. Run the script under the user principal(s) that will need to access the credential
-4. Securely delete the WriteCreds script or encrypt and store it in a secure location with a password so the plain text can't be easily seen. The WriteCreds script file does not need to exist on the server so just delete it or migrate it off the server.
+4. After installing the secret, the secret will be stored in `HKCU:\Software\keyname you configure`
+5. Securely delete the WriteCreds script or encrypt and store it in a secure location with a password so the plain text can't be easily seen. The WriteCreds script file does not need to exist on the server so just delete it or migrate it off the server.
 
 # Using the secrets
 1. Download the ReadCreds script and place it in a secure location on the server where the scripts that will be using the creds reside. 
-- Recommend this to be outside of your network share if possible.
-- Recommend to make the script read-only
-- Recommend to remove all write permissions to the file and only allow the "read" permission
-2. After installing the secret, the secret will be stored in `HKCU:\Software\keyname you configure`
-3. Simply call the "ReadCreds" script with the "action" to read the encrypted value from the registry and decrypt it
+ - Recommend this to be outside of your network share if possible.
+ - Recommend to make the script read-only
+ - Recommend to remove all write permissions to the file and only allow the "read" permission
+2. Simply call the "ReadCreds" script with the "action" to read the encrypted value from the registry and decrypt it
 
 # Example 1 - Retrieving secret in a Batch Script
 - Credentials have been installed into jsmith's user account using the WriteCreds script.
